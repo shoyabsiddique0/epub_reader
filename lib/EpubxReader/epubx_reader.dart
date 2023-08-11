@@ -182,6 +182,7 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
                     builder: ((context) => EpubWebView(
                           chapter: chapters,
                           title: book.Title!,
+                          book: book
                         ))));
           },
           child: Text("See Book")),
