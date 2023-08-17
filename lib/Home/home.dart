@@ -1,7 +1,9 @@
+import 'package:ebook_reader/CustomReader/custom_reader_screen.dart';
 import 'package:ebook_reader/EbookRead/ebook_read.dart';
 import 'package:ebook_reader/EpubxReader/epubx_reader.dart';
 import 'package:ebook_reader/VocsyEpub/vocsy_epub.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -10,7 +12,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("EBook Reader"),
+        title: const Text("EBook Reader"),
       ),
       body: Center(
         child: Column(
@@ -18,23 +20,28 @@ class Home extends StatelessWidget {
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => EbookRead()));
+                      MaterialPageRoute(builder: (context) => const EbookRead()));
                 },
-                child: Text("Epub View Package")),
+                child: const Text("Epub View Package")),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => VocsyEpubReader()));
+                          builder: (context) => const VocsyEpubReader()));
                 },
-                child: Text("Vocsy Epub View Package")),
+                child: const Text("Vocsy Epub View Package")),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => EpubWidget()));
                 },
-                child: Text("EpubX")),
+                child: const Text("EpubX")),
+            ElevatedButton(
+                onPressed: () {
+                  Get.to(const CustomReaderScreen());
+                },
+                child: const Text("Custom Reader")),
           ],
         ),
       ),

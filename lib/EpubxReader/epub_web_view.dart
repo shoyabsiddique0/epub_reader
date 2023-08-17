@@ -7,7 +7,7 @@ class EpubWebView extends StatefulWidget {
   final Future<List<EpubChapterRef>> chapter;
   final String title;
   final EpubBookRef book;
-  EpubWebView(
+  const EpubWebView(
       {super.key,
       required this.title,
       required this.chapter,
@@ -24,7 +24,8 @@ class _EpubWebViewState extends State<EpubWebView> {
   double panDetails = 0;
   @override
   Widget build(BuildContext context) {
-    print(widget.book.Schema?.Package?.Manifest?.Items);
+    print(widget.book.Content?.Css);
+    var css = widget.book.Content?.Css;
     return Scaffold(
       drawer: Drawer(
         child: FutureBuilder(
@@ -217,9 +218,9 @@ class _EpubWebViewState extends State<EpubWebView> {
           i += maxCharacters;
         } else {
           int index = text.substring(i, i + maxCharacters).lastIndexOf(" ");
-          print("--->$j $index");
           // print()
           String data = text.substring(i, i + index).trim();
+          // print("--->$j $data");
           if (data.length < index) {
             int rem = index - data.length;
             // data += text.substring();

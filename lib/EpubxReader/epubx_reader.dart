@@ -43,25 +43,25 @@ class EpubState extends State<EpubWidget> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Padding(padding: EdgeInsets.only(top: 16.0)),
-                Text(
+                const Padding(padding: EdgeInsets.only(top: 16.0)),
+                const Text(
                   'Epub Inspector',
                   style: TextStyle(fontSize: 25.0),
                 ),
-                Padding(padding: EdgeInsets.only(top: 50.0)),
-                Text(
+                const Padding(padding: EdgeInsets.only(top: 50.0)),
+                const Text(
                   'Enter the Url of an Epub to view some of it\'s metadata.',
                   style: TextStyle(fontSize: 18.0),
                   textAlign: TextAlign.center,
                 ),
-                Padding(padding: EdgeInsets.only(top: 20.0)),
+                const Padding(padding: EdgeInsets.only(top: 20.0)),
                 TextFormField(
                   decoration: InputDecoration(
                     labelText: "Enter Url",
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(25.0),
-                      borderSide: BorderSide(),
+                      borderSide: const BorderSide(),
                     ),
                   ),
                   validator: (val) {
@@ -73,33 +73,34 @@ class EpubState extends State<EpubWidget> {
                   },
                   controller: _urlController,
                   keyboardType: TextInputType.url,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: "Poppins",
                   ),
                 ),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 20.0),
                 ),
                 ElevatedButton(
                   onPressed: fetchBookButton,
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        EdgeInsets.all(8.0)),
-                    textStyle: MaterialStateProperty.all<TextStyle>(TextStyle(
+                        const EdgeInsets.all(8.0)),
+                    textStyle:
+                        MaterialStateProperty.all<TextStyle>(const TextStyle(
                       color: Colors.white,
                     )),
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.blue),
                   ),
-                  child: Text("Inspect Book"),
+                  child: const Text("Inspect Book"),
                 ),
-                Padding(padding: EdgeInsets.only(top: 25.0)),
-                Text(
+                const Padding(padding: EdgeInsets.only(top: 25.0)),
+                const Text(
                   'Or select available links:',
                   style: TextStyle(fontSize: 18.0),
                   textAlign: TextAlign.center,
                 ),
-                Padding(padding: EdgeInsets.only(top: 12.0)),
+                const Padding(padding: EdgeInsets.only(top: 12.0)),
                 Column(
                   children: [
                     ...[
@@ -107,6 +108,8 @@ class EpubState extends State<EpubWidget> {
                       'https://filesamples.com/samples/ebook/epub/Sway.epub',
                       'https://filesamples.com/samples/ebook/epub/Alices%20Adventures%20in%20Wonderland.epub',
                       'https://www.purebhakti.com/resources/ebooks-magazines/other/epubs/577-essence-of-bhagavad-gita-epub/file',
+                      "https://cloudflare-ipfs.com/ipfs/bafykbzacecprokw3tm3tl6gduh3g3ph6542dywgkkqqsisv4rnckhbf7hqskw?filename=Ashwin%20Sanghi%20-%20Chanakya%E2%80%99s%20Chant%20%28Hindi%29-Westland%20%282014%29.epub",
+                      "https://github.com/shoyabsiddique0/epub_reader/raw/main/hindi_sample.epub"
                     ]
                         .map((link) => TextButton(
                               child: Text(link),
@@ -116,7 +119,7 @@ class EpubState extends State<EpubWidget> {
                         .toList(),
                   ],
                 ),
-                Padding(padding: EdgeInsets.only(top: 25.0)),
+                const Padding(padding: EdgeInsets.only(top: 25.0)),
                 Center(
                   child: FutureBuilder<epub.EpubBookRef>(
                     future: book,
@@ -152,26 +155,26 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
   return Container(
       child: Column(
     children: <Widget>[
-      Text(
+      const Text(
         "Title",
         style: TextStyle(fontSize: 20.0),
       ),
       Text(
         book.Title!,
-        style: TextStyle(fontSize: 15.0),
+        style: const TextStyle(fontSize: 15.0),
       ),
-      Padding(
+      const Padding(
         padding: EdgeInsets.only(top: 15.0),
       ),
-      Text(
+      const Text(
         "Author",
         style: TextStyle(fontSize: 20.0),
       ),
       Text(
         book.Author!,
-        style: TextStyle(fontSize: 15.0),
+        style: const TextStyle(fontSize: 15.0),
       ),
-      Padding(
+      const Padding(
         padding: EdgeInsets.only(top: 15.0),
       ),
       ElevatedButton(
@@ -180,22 +183,19 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
                 context,
                 MaterialPageRoute(
                     builder: ((context) => EpubWebView(
-                          chapter: chapters,
-                          title: book.Title!,
-                          book: book
-                        ))));
+                        chapter: chapters, title: book.Title!, book: book))));
           },
-          child: Text("See Book")),
+          child: const Text("See Book")),
       FutureBuilder<List<epub.EpubChapterRef>>(
           future: chapters,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return Column(
                 children: <Widget>[
-                  Text("Chapters", style: TextStyle(fontSize: 20.0)),
+                  const Text("Chapters", style: TextStyle(fontSize: 20.0)),
                   Text(
                     snapshot.data!.length.toString(),
-                    style: TextStyle(fontSize: 15.0, color: Colors.black),
+                    style: const TextStyle(fontSize: 15.0, color: Colors.black),
                   )
                 ],
               );
@@ -204,7 +204,7 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
             }
             return Container();
           }),
-      Padding(
+      const Padding(
         padding: EdgeInsets.only(top: 15.0),
       ),
       FutureBuilder<epub.Image?>(
@@ -213,7 +213,7 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
           if (snapshot.hasData) {
             return Column(
               children: <Widget>[
-                Text("Cover", style: TextStyle(fontSize: 20.0)),
+                const Text("Cover", style: TextStyle(fontSize: 20.0)),
                 Image.memory(
                     Uint8List.fromList(image.encodePng(snapshot.data!))),
               ],
@@ -223,6 +223,20 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
           }
           return Container();
         },
+      ),
+      Column(
+        children: book.Content!.Css!.entries
+            .map((value) => FutureBuilder<String>(
+                future: value.value.ReadContentAsync(),
+                builder: (context, snapshot) {
+                  return snapshot.hasData
+                      ? Text(
+                          snapshot.data!,
+                          style: TextStyle(color: Colors.black),
+                        )
+                      : const Text("");
+                }))
+            .toList(),
       ),
     ],
   ));
