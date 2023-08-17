@@ -1,6 +1,7 @@
 import 'package:epubx/epubx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EpubWebView extends StatefulWidget {
   final Future<List<EpubChapterRef>> chapter;
@@ -17,13 +18,13 @@ class EpubWebView extends StatefulWidget {
 }
 
 class _EpubWebViewState extends State<EpubWebView> {
-  double dyanmicFont = 15;
+  double dyanmicFont = 15.sp;
   PageController controller = PageController();
   PageController controller1 = PageController();
   double panDetails = 0;
   @override
   Widget build(BuildContext context) {
-    print(widget.book.Schema?.Navigation?.NavMap?.Points);
+    print(widget.book.Schema?.Package?.Manifest?.Items);
     return Scaffold(
       drawer: Drawer(
         child: FutureBuilder(
@@ -36,7 +37,7 @@ class _EpubWebViewState extends State<EpubWebView> {
                       return ListTile(
                           title: Text(snapshot.data![index].Title.toString()),
                           onTap: () => controller.animateToPage(index,
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               curve: Curves.bounceIn),
                           subtitle: Column(
                             children: snapshot.data![index].SubChapters!
@@ -47,7 +48,7 @@ class _EpubWebViewState extends State<EpubWebView> {
                           ));
                     });
               }
-              return Text("");
+              return const Text("");
             }),
       ),
       appBar: AppBar(
@@ -56,18 +57,19 @@ class _EpubWebViewState extends State<EpubWebView> {
           IconButton(
               onPressed: () {
                 setState(() {
-                  dyanmicFont += 5;
+                  dyanmicFont += 5.sp;
                 });
               },
-              icon: Icon(Icons.add)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.text_fields_rounded)),
+              icon: const Icon(Icons.add)),
+          IconButton(
+              onPressed: () {}, icon: const Icon(Icons.text_fields_rounded)),
           IconButton(
               onPressed: () {
                 setState(() {
-                  dyanmicFont -= 5;
+                  dyanmicFont -= 5.sp;
                 });
               },
-              icon: Icon(Icons.minimize_outlined)),
+              icon: const Icon(Icons.minimize_outlined)),
         ],
       ),
       body: StreamBuilder(
@@ -78,7 +80,7 @@ class _EpubWebViewState extends State<EpubWebView> {
               return snapshot.hasData
                   ? PageView(
                       scrollDirection: Axis.horizontal,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       controller: controller,
                       // itemCount: data.length,
                       children: data.map((e) {
@@ -96,8 +98,8 @@ class _EpubWebViewState extends State<EpubWebView> {
                                   },
                                   onPanEnd: (details) {
                                     int length = splitString(
-                                            500,
-                                            600,
+                                            500.w,
+                                            600.h,
                                             dyanmicFont.toInt(),
                                             snapshot1.hasData
                                                 ? snapshot1.data!
@@ -110,18 +112,18 @@ class _EpubWebViewState extends State<EpubWebView> {
                                         print(controller.page!.toInt() - 1);
                                         controller.animateToPage(
                                             controller.page!.toInt() - 1,
-                                            duration:
-                                                Duration(milliseconds: 10),
+                                            duration: const Duration(
+                                                milliseconds: 10),
                                             curve: Curves.bounceIn);
                                         controller1.animateToPage(length - 1,
-                                            duration:
-                                                Duration(milliseconds: 10),
+                                            duration: const Duration(
+                                                milliseconds: 10),
                                             curve: Curves.bounceIn);
                                       } else {
                                         controller1.animateToPage(
                                             controller1.page!.toInt() - 1,
-                                            duration:
-                                                Duration(milliseconds: 10),
+                                            duration: const Duration(
+                                                milliseconds: 10),
                                             curve: Curves.bounceIn);
                                       }
                                     } else if (panDetails < 0) {
@@ -130,30 +132,30 @@ class _EpubWebViewState extends State<EpubWebView> {
                                         print(controller.page!.toInt() + 1);
                                         controller.animateToPage(
                                             controller.page!.toInt() + 1,
-                                            duration:
-                                                Duration(milliseconds: 10),
+                                            duration: const Duration(
+                                                milliseconds: 10),
                                             curve: Curves.bounceIn);
                                       } else {
                                         controller1.animateToPage(
                                             controller1.page!.toInt() + 1,
-                                            duration:
-                                                Duration(milliseconds: 10),
+                                            duration: const Duration(
+                                                milliseconds: 10),
                                             curve: Curves.bounceIn);
                                       }
                                     }
                                   },
                                   child: Center(
                                     child: SizedBox(
-                                      height: 600,
-                                      width: 300,
+                                      height: 600.h,
+                                      width: 300.w,
                                       child: PageView.builder(
                                           controller: controller1,
                                           physics:
-                                              NeverScrollableScrollPhysics(),
+                                              const NeverScrollableScrollPhysics(),
                                           scrollDirection: Axis.horizontal,
                                           itemCount: splitString(
-                                                  500,
-                                                  600,
+                                                  500.w,
+                                                  600.h,
                                                   dyanmicFont.toInt(),
                                                   snapshot1.hasData
                                                       ? snapshot1.data!
@@ -174,8 +176,14 @@ class _EpubWebViewState extends State<EpubWebView> {
                                                   fontSize:
                                                       FontSize(dyanmicFont),
                                                 ),
-                                                "h1": Style(color: Colors.blue),
-                                                "h2": Style(color: Colors.amber)
+                                                "h1": Style(
+                                                    color: Colors.blue,
+                                                    fontSize:
+                                                        FontSize(dyanmicFont)),
+                                                "h2": Style(
+                                                    color: Colors.amber,
+                                                    fontSize:
+                                                        FontSize(dyanmicFont))
                                               },
                                             );
                                           }),
@@ -185,9 +193,9 @@ class _EpubWebViewState extends State<EpubWebView> {
                               );
                             });
                       }).toList())
-                  : Text("Data");
+                  : const Text("Data");
             }
-            return Text("");
+            return const Text("");
           }),
     );
   }
@@ -200,12 +208,22 @@ class _EpubWebViewState extends State<EpubWebView> {
       double maxWidthPerLine = width / fontSize;
       double maxHeight = height / fontSize;
       maxCharacters = (maxWidthPerLine * maxHeight).floor();
-      for (int i = 0; i <= text.length;) {
+      for (int i = 0, j = 1; i <= text.length; j++) {
         if (i + maxCharacters > text.length) {
-          listData.add(text.substring(i, text.length));
+          String data = text.substring(i, text.length).trim();
+          // print(data.lastIndexOf("</"));
+          // print(data.lastIndexOf("<([A-Za-z])"));
+          listData.add(text.substring(i, text.length).trim());
           i += maxCharacters;
         } else {
           int index = text.substring(i, i + maxCharacters).lastIndexOf(" ");
+          print("--->$j $index");
+          // print()
+          String data = text.substring(i, i + index).trim();
+          if (data.length < index) {
+            int rem = index - data.length;
+            // data += text.substring();
+          }
           listData.add(text.substring(i, i + index));
           i += index;
         }
