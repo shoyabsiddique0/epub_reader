@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:ebook_reader/EpubxReader/epub_web_view.dart';
+import 'package:ebook_reader/css_to_style.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:epubx/epubx.dart' as epub;
@@ -152,94 +153,117 @@ class EpubState extends State<EpubWidget> {
 Widget buildEpubWidget(epub.EpubBookRef book, context) {
   var chapters = book.getChapters();
   var cover = book.readCover();
-  return Container(
-      child: Column(
-    children: <Widget>[
-      const Text(
-        "Title",
-        style: TextStyle(fontSize: 20.0),
-      ),
-      Text(
-        book.Title!,
-        style: const TextStyle(fontSize: 15.0),
-      ),
-      const Padding(
-        padding: EdgeInsets.only(top: 15.0),
-      ),
-      const Text(
-        "Author",
-        style: TextStyle(fontSize: 20.0),
-      ),
-      Text(
-        book.Author!,
-        style: const TextStyle(fontSize: 15.0),
-      ),
-      const Padding(
-        padding: EdgeInsets.only(top: 15.0),
-      ),
-      ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: ((context) => EpubWebView(
-                        chapter: chapters, title: book.Title!, book: book))));
-          },
-          child: const Text("See Book")),
-      FutureBuilder<List<epub.EpubChapterRef>>(
-          future: chapters,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Column(
-                children: <Widget>[
-                  const Text("Chapters", style: TextStyle(fontSize: 20.0)),
-                  Text(
-                    snapshot.data!.length.toString(),
-                    style: const TextStyle(fontSize: 15.0, color: Colors.black),
-                  )
-                ],
-              );
-            } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
-            }
-            return Container();
-          }),
-      const Padding(
-        padding: EdgeInsets.only(top: 15.0),
-      ),
-      FutureBuilder<epub.Image?>(
-        future: cover,
-        builder: (context, AsyncSnapshot<epub.Image?> snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: <Widget>[
-                const Text("Cover", style: TextStyle(fontSize: 20.0)),
-                Image.memory(
-                    Uint8List.fromList(image.encodePng(snapshot.data!))),
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
-          return Container();
-        },
-      ),
-      Column(
-        children: book.Content!.Css!.entries
-            .map((value) => FutureBuilder<String>(
-                future: value.value.ReadContentAsync(),
-                builder: (context, snapshot) {
-                  return snapshot.hasData
-                      ? Text(
-                          snapshot.data!,
-                          style: TextStyle(color: Colors.black),
-                        )
-                      : const Text("");
-                }))
-            .toList(),
-      ),
-    ],
-  ));
+  var css = book.Content!.Css;
+  CssToStyle obj = CssToStyle();
+  var data = obj.processData(css!);
+  var styleSheet;
+
+  return FutureBuilder(
+      future: data,
+      // initialData: InitialData,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          styleSheet = obj.parseCSSString(snapshot.data);
+
+          return Container(
+              child: Column(
+            children: <Widget>[
+              const Text(
+                "Title",
+                style: TextStyle(fontSize: 20.0),
+              ),
+              Text(
+                book.Title!,
+                style: const TextStyle(fontSize: 15.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 15.0),
+              ),
+              const Text(
+                "Author",
+                style: TextStyle(fontSize: 20.0),
+              ),
+              Text(
+                book.Author!,
+                style: const TextStyle(fontSize: 15.0),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 15.0),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) => EpubWebView(
+                                chapter: chapters,
+                                title: book.Title!,
+                                book: book))));
+                  },
+                  child: const Text("See Book")),
+              FutureBuilder<List<epub.EpubChapterRef>>(
+                  future: chapters,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: <Widget>[
+                          const Text("Chapters",
+                              style: TextStyle(fontSize: 20.0)),
+                          Text(
+                            snapshot.data!.length.toString(),
+                            style: const TextStyle(
+                                fontSize: 15.0, color: Colors.black),
+                          )
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+                    return Container();
+                  }),
+              const Padding(
+                padding: EdgeInsets.only(top: 15.0),
+              ),
+              FutureBuilder<epub.Image?>(
+                future: cover,
+                builder: (context, AsyncSnapshot<epub.Image?> snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: <Widget>[
+                        const Text("Cover", style: TextStyle(fontSize: 20.0)),
+                        Image.memory(Uint8List.fromList(
+                            image.encodePng(snapshot.data!))),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return Container();
+                },
+              ),
+              Column(
+                children: book.Content!.Css!.entries
+                    .map((value) => FutureBuilder<String>(
+                        future: value.value.ReadContentAsync(),
+                        builder: (context, snapshot) {
+                          return snapshot.hasData
+                              ? Text(
+                                  snapshot.data!,
+                                  style: TextStyle(color: Colors.black),
+                                )
+                              : const Text("");
+                        }))
+                    .toList(),
+              ),
+            ],
+          ));
+        }
+        return Text("");
+      }
+      // return Text("");
+      );
+  print(styleSheet);
+  return Text("");
 }
 
 // Needs a url to a valid url to an epub such as

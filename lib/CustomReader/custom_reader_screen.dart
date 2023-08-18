@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:ebook_reader/CustomReader/custom_reader_controller.dart';
 import 'package:ebook_reader/CustomReader/custom_reader_view_screen.dart';
+import 'package:ebook_reader/css_to_style.dart';
 import 'package:epubx/epubx.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,6 +36,8 @@ class _CustomReaderScreenState extends State<CustomReaderScreen> {
               var chapters = snapshot.data?.getChapters();
               var css = snapshot.data?.Content!.Css;
               var imagesList = snapshot.data?.Content!.Images;
+              CssToStyle obj = CssToStyle();
+              // obj.processData(css!);
               // var html = snapshot.data?.Content!.Html;
               print(chapters);
               var cover = snapshot.data?.readCover();
