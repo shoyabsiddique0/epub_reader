@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:ebook_reader/EpubxReader/epub_web_view.dart';
+import 'package:ebook_reader/css_model.dart';
 import 'package:ebook_reader/css_to_style.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -164,7 +165,7 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           styleSheet = obj.parseCSSString(snapshot.data);
-
+          CssModel().mapCssToModel(styleSheet);
           return Container(
               child: Column(
             children: <Widget>[
