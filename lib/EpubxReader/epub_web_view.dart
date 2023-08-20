@@ -1,17 +1,25 @@
+import 'dart:typed_data';
+import 'package:epubx/src/ref_entities/epub_byte_content_file_ref.dart';
 import 'package:epubx/epubx.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+// import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:flutter/widgets.dart' as widgets;
+import 'package:html/parser.dart';
 
 class EpubWebView extends StatefulWidget {
   final Future<List<EpubChapterRef>> chapter;
   final String title;
   final EpubBookRef book;
+  final String style;
   const EpubWebView(
       {super.key,
       required this.title,
       required this.chapter,
-      required this.book});
+      required this.book,
+      required this.style});
 
   @override
   State<EpubWebView> createState() => _EpubWebViewState();
@@ -24,7 +32,6 @@ class _EpubWebViewState extends State<EpubWebView> {
   double panDetails = 0;
   @override
   Widget build(BuildContext context) {
-    print(widget.book.Content?.Css);
     var css = widget.book.Content?.Css;
     return Scaffold(
       drawer: Drawer(
@@ -78,6 +85,7 @@ class _EpubWebViewState extends State<EpubWebView> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List data = snapshot.data!;
+              var imagesList = widget.book.Content!.Images;
               return snapshot.hasData
                   ? PageView(
                       scrollDirection: Axis.horizontal,
@@ -88,11 +96,9 @@ class _EpubWebViewState extends State<EpubWebView> {
                         return FutureBuilder<String>(
                             future: e.readHtmlContent(),
                             builder: (context, snapshot1) {
-                              // print(snapshot1.data);
                               return SingleChildScrollView(
                                 child: GestureDetector(
                                   onPanUpdate: (details) {
-                                    print(details.delta.dx);
                                     setState(() {
                                       panDetails = details.delta.dx;
                                     });
@@ -107,10 +113,8 @@ class _EpubWebViewState extends State<EpubWebView> {
                                                 : "")
                                         .length;
                                     if (panDetails > 0) {
-                                      print("Go Back");
                                       if (controller1.page == 0 &&
                                           controller.page != 0) {
-                                        print(controller.page!.toInt() - 1);
                                         controller.animateToPage(
                                             controller.page!.toInt() - 1,
                                             duration: const Duration(
@@ -128,9 +132,7 @@ class _EpubWebViewState extends State<EpubWebView> {
                                             curve: Curves.bounceIn);
                                       }
                                     } else if (panDetails < 0) {
-                                      print("Go Aage");
                                       if (controller1.page == length - 1) {
-                                        print(controller.page!.toInt() + 1);
                                         controller.animateToPage(
                                             controller.page!.toInt() + 1,
                                             duration: const Duration(
@@ -155,7 +157,7 @@ class _EpubWebViewState extends State<EpubWebView> {
                                               const NeverScrollableScrollPhysics(),
                                           scrollDirection: Axis.horizontal,
                                           itemCount: splitString(
-                                                  500.w,
+                                                  300.w,
                                                   600.h,
                                                   dyanmicFont.toInt(),
                                                   snapshot1.hasData
@@ -164,28 +166,74 @@ class _EpubWebViewState extends State<EpubWebView> {
                                               .length,
                                           itemBuilder: (context, index) {
                                             List data = splitString(
-                                                500,
+                                                300,
                                                 600,
                                                 dyanmicFont.toInt(),
                                                 snapshot1.hasData
                                                     ? snapshot1.data!
                                                     : "");
-                                            return Html(
-                                              data: data[index],
-                                              style: {
-                                                "body": Style(
-                                                  fontSize:
-                                                      FontSize(dyanmicFont),
-                                                ),
-                                                "h1": Style(
-                                                    color: Colors.blue,
-                                                    fontSize:
-                                                        FontSize(dyanmicFont)),
-                                                "h2": Style(
-                                                    color: Colors.amber,
-                                                    fontSize:
-                                                        FontSize(dyanmicFont))
+                                            return HtmlWidget(
+                                              '''
+                                                <html>
+                                                <head></head>
+                                                <style>${widget.style}</style>
+                                                <body>
+                                                ${data[index]}
+                                                </body>
+                                                </html>
+                                              ''',
+                                              customWidgetBuilder: (element) {
+                                                EpubByteContentFileRef?
+                                                    imageData;
+                                                if (element.localName ==
+                                                    "img") {
+                                                  for (var i in element
+                                                      .attributes.entries) {
+                                                    // print(i);
+                                                    if (i.key == "src") {
+                                                      // print(value[
+                                                      //     value.length - 1]);
+                                                      imagesList!.entries
+                                                          .forEach((e) {
+                                                        if (e.key == i.value) {
+                                                          print(e);
+                                                          imageData = e.value;
+                                                        }
+                                                      });
+                                                    }
+                                                  }
+                                                  return FutureBuilder(
+                                                      future: imageData!
+                                                          .readContentAsBytes(),
+                                                      builder:
+                                                          (context, snapshot) {
+                                                        return snapshot.hasData
+                                                            ? widgets.Image
+                                                                .memory(Uint8List
+                                                                    .fromList(
+                                                                        snapshot
+                                                                            .data!))
+                                                            : const SizedBox
+                                                                .shrink();
+                                                      });
+                                                }
                                               },
+                                              // shrinkWrap: true,
+                                              // style: widget.style,
+                                              // style: {
+                                              //   "*": Style(
+                                              //     fontSize:
+                                              //         FontSize(dyanmicFont),
+                                              //   ),
+                                              // "h1": Style(
+                                              //     color: Colors.blue,
+                                              //     fontSize:
+                                              //         FontSize(dyanmicFont)),
+                                              // "h2": Style(
+                                              //     color: Colors.amber,
+                                              //     fontSize:
+                                              //         FontSize(dyanmicFont))
+                                              // },
                                             );
                                           }),
                                     ),
@@ -208,31 +256,72 @@ class _EpubWebViewState extends State<EpubWebView> {
     if (width > 0 && height > 0 && fontSize > 0) {
       double maxWidthPerLine = width / fontSize;
       double maxHeight = height / fontSize;
+      String tag = "";
+      String data = "";
+      var document = parse(text);
+      // print("--->${document.body!.nodes}");
       maxCharacters = (maxWidthPerLine * maxHeight).floor();
-      for (int i = 0, j = 1; i <= text.length; j++) {
-        if (i + maxCharacters > text.length) {
-          String data = text.substring(i, text.length).trim();
-          // print(data.lastIndexOf("</"));
-          // print(data.lastIndexOf("<([A-Za-z])"));
-          listData.add(text.substring(i, text.length).trim());
-          i += maxCharacters;
-        } else {
-          int index = text.substring(i, i + maxCharacters).lastIndexOf(" ");
-          // print()
-          String data = text.substring(i, i + index).trim();
-          // print("--->$j $data");
-          if (data.length < index) {
-            int rem = index - data.length;
-            // data += text.substring();
+      listData = splitHtmlWithTags(text, maxCharacters);
+      // for (var i in document.body!.nodes) {
+      //   if (i.hasChildNodes()) {
+      //     for (var j in i.nodes) {
+      //       // print("---->$j");
+      //     }
+      //   }
+      // }
+      //     for (int i = 0, j = 1; i <= text.length; j++) {
+      //       if (i + maxCharacters > text.length) {
+      //         data = text.substring(i, text.length).trim();
+      //         listData.add(data);
+      //         i += maxCharacters;
+      //       } else {
+      //         int index = text.substring(i, i + maxCharacters).lastIndexOf(" ");
+      //         data = text.substring(i, i + index).trim();
+      //         listData.add(data.trim());
+      //         i += index;
+      //       }
+      //     }
+      //   } else {
+      //     maxCharacters = 0;
+      //   }
+      //   print(listData.length);
+    }
+    return listData;
+  }
+
+  List<String> splitHtmlWithTags(String html, int maxCharacters) {
+    List<String> chunks = [];
+    String currentChunk = '';
+
+    final dom.Document document = parse(html);
+    final dom.NodeList nodes = document.body!.nodes;
+
+    for (var node in nodes) {
+      String nodeHtml = "";
+      if (node is dom.Element) {
+        nodeHtml = node.outerHtml;
+      }
+
+      while (nodeHtml.isNotEmpty) {
+        int endIndex = nodeHtml.length;
+        if (endIndex > maxCharacters) {
+          endIndex = nodeHtml.lastIndexOf(' ', maxCharacters);
+          if (endIndex == -1) {
+            endIndex = maxCharacters;
           }
-          listData.add(text.substring(i, i + index));
-          i += index;
+        }
+
+        String chunkPart = nodeHtml.substring(0, endIndex);
+        currentChunk += chunkPart;
+        nodeHtml = nodeHtml.substring(endIndex);
+
+        if (currentChunk.trim().isNotEmpty) {
+          chunks.add(currentChunk);
+          currentChunk = '';
         }
       }
-    } else {
-      maxCharacters = 0;
     }
-    // print(listData);
-    return listData;
+    // print(chunks);
+    return chunks;
   }
 }

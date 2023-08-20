@@ -4,6 +4,8 @@ import 'package:ebook_reader/EpubxReader/epub_web_view.dart';
 import 'package:ebook_reader/css_model.dart';
 import 'package:ebook_reader/css_to_style.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:epubx/epubx.dart' as epub;
 import 'package:image/image.dart' as image;
@@ -111,7 +113,8 @@ class EpubState extends State<EpubWidget> {
                       'https://filesamples.com/samples/ebook/epub/Alices%20Adventures%20in%20Wonderland.epub',
                       'https://www.purebhakti.com/resources/ebooks-magazines/other/epubs/577-essence-of-bhagavad-gita-epub/file',
                       "https://cloudflare-ipfs.com/ipfs/bafykbzacecprokw3tm3tl6gduh3g3ph6542dywgkkqqsisv4rnckhbf7hqskw?filename=Ashwin%20Sanghi%20-%20Chanakya%E2%80%99s%20Chant%20%28Hindi%29-Westland%20%282014%29.epub",
-                      "https://github.com/shoyabsiddique0/epub_reader/raw/main/hindi_sample.epub"
+                      "https://github.com/shoyabsiddique0/epub_reader/raw/main/hindi_sample.epub",
+                      'https://cloudflare-ipfs.com/ipfs/bafykbzacecoyxtsxcmjah5jzbyddu5eot63ogkskxhc4zp4amwoitvasqi6kc?filename=Leach%2C%20Frann%20-%20Natural%20Colors%20to%20Dye%20for_%20How%20to%20Use%20Natural%20Dyes%20From%20Plants%20and%20Fungi-Free-EasyPublications%20com%20%282013%29.epub'
                     ]
                         .map((link) => TextButton(
                               child: Text(link),
@@ -164,8 +167,9 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
       // initialData: InitialData,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          styleSheet = obj.parseCSSString(snapshot.data);
-          CssModel().mapCssToModel(styleSheet);
+          // styleSheet = obj.parseCSSString(snapshot.data);
+          // Map<String, CssModel> data = CssModel().mapCssToModel(styleSheet);
+          // Map<String, Style> parsedStyle = CssModel().mapToStyle(data);
           return Container(
               child: Column(
             children: <Widget>[
@@ -193,13 +197,11 @@ Widget buildEpubWidget(epub.EpubBookRef book, context) {
               ),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => EpubWebView(
-                                chapter: chapters,
-                                title: book.Title!,
-                                book: book))));
+                    Get.to(EpubWebView(
+                        chapter: chapters,
+                        title: book.Title!,
+                        book: book,
+                        style: snapshot.data));
                   },
                   child: const Text("See Book")),
               FutureBuilder<List<epub.EpubChapterRef>>(

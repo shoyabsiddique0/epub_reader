@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:get/get_rx/get_rx.dart';
 
 class CssModel {
   String? after; //after
@@ -8,18 +11,18 @@ class CssModel {
   String? before;
   Border? border;
   Color? color;
-  Map? counterIncrement;
-  Map? counterReset;
+  Map<String, int?>? counterIncrement;
+  Map<String, int?>? counterReset;
   TextDirection? direction;
   Display? display;
   String? fontFamily;
-  List? fontFamilyFallback;
-  List? fontFeatureSettings;
+  List<String>? fontFamilyFallback;
+  List<FontFeature>? fontFeatureSettings;
   FontSize? fontSize;
   FontStyle? fontStyle;
   FontWeight? fontWeight;
   Height? height;
-  int? letterSpacing;
+  double? letterSpacing;
   LineHeight? lineHeight;
   ListStyleImage? listStyleImage;
   ListStylePosition? listStylePosition;
@@ -32,14 +35,14 @@ class CssModel {
   TextDecoration? textDecoration;
   Color? textDecorationColor;
   TextDecorationStyle? textDecorationStyle;
-  int? textDecorationThickness;
+  double? textDecorationThickness;
   TextOverflow? textOverflow;
-  List? textShadow;
+  List<Shadow>? textShadow;
   TextTransform? textTransform;
-  VerticalAlign? verticalAlign;
+  VerticalAlign? verticalAlign = VerticalAlign.baseline;
   WhiteSpace? whiteSpace;
   Width? width;
-  int? wordSpacing;
+  double? wordSpacing;
   CssModel({
     this.after,
     this.alignmemt,
@@ -88,18 +91,18 @@ class CssModel {
     String? before,
     Border? border,
     Color? color,
-    Map? counterIncrement,
-    Map? counterReset,
+    Map<String, int?>? counterIncrement,
+    Map<String, int?>? counterReset,
     TextDirection? direction,
     Display? display,
     String? fontFamily,
-    List? fontFamilyFallback,
-    List? fontFeatureSettings,
+    List<String>? fontFamilyFallback,
+    List<FontFeature>? fontFeatureSettings,
     FontSize? fontSize,
     FontStyle? fontStyle,
     FontWeight? fontWeight,
     Height? height,
-    int? letterSpacing,
+    double? letterSpacing,
     LineHeight? lineHeight,
     ListStyleImage? listStyleImage,
     ListStylePosition? listStylePosition,
@@ -112,14 +115,14 @@ class CssModel {
     TextDecoration? textDecoration,
     Color? textDecorationColor,
     TextDecorationStyle? textDecorationStyle,
-    int? textDecorationThickness,
+    double? textDecorationThickness,
     TextOverflow? textOverflow,
-    List? textShadow,
+    List<Shadow>? textShadow,
     TextTransform? textTransform,
-    VerticalAlign? verticalAlign,
+    VerticalAlign verticalAlign = VerticalAlign.baseline,
     WhiteSpace? whiteSpace,
     Width? width,
-    int? wordSpacing,
+    double? wordSpacing,
   }) {
     return CssModel(
       after: after ?? this.after,
@@ -157,7 +160,7 @@ class CssModel {
       textOverflow: textOverflow ?? this.textOverflow,
       textShadow: textShadow ?? this.textShadow,
       textTransform: textTransform ?? this.textTransform,
-      verticalAlign: verticalAlign ?? this.verticalAlign,
+      verticalAlign: verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
       wordSpacing: wordSpacing ?? this.wordSpacing,
@@ -253,23 +256,19 @@ class CssModel {
             if (value.contains("%")) {
               double size =
                   double.tryParse(value.substring(0, value.length - 1)) ?? 10.5;
-              cssModel.fontSize = FontSize(size, Unit.percent);
+              cssModel.fontSize = FontSize(size);
             }
             if (value.contains("rem")) {
               double size =
                   double.tryParse(value.substring(0, value.length - 3)) ?? 10.5;
-              cssModel.fontSize = FontSize(size, Unit.rem);
+              cssModel.fontSize = FontSize(size);
             }
             String unit = value.substring(value.length - 2);
             double size =
                 double.tryParse(value.substring(0, value.length - 2)) ?? 10.5;
             cssModel.fontSize = FontSize(
-                size,
-                unit == "px"
-                    ? Unit.px
-                    : unit == "em"
-                        ? Unit.em
-                        : Unit.auto);
+              size,
+            );
           }
         }
         if (key == "font-style") {
@@ -328,55 +327,43 @@ class CssModel {
                 double size =
                     double.tryParse(value.substring(0, value.length - 1)) ??
                         10.5;
-                cssModel.height = Height(size, Unit.percent);
+                cssModel.height = Height(size);
               }
               if (value.contains("rem")) {
                 double size =
                     double.tryParse(value.substring(0, value.length - 3)) ??
                         10.5;
-                cssModel.height = Height(size, Unit.rem);
+                cssModel.height = Height(size);
               }
               String unit = value.substring(value.length - 2);
               double size =
                   double.tryParse(value.substring(0, value.length - 2)) ?? 10.5;
-              cssModel.height = Height(
-                  size,
-                  unit == "px"
-                      ? Unit.px
-                      : unit == "em"
-                          ? Unit.em
-                          : Unit.auto);
+              cssModel.height = Height(size);
             }
           }
         }
         if (key == "letter-spacing") {
           cssModel.letterSpacing = double.tryParse(
-                  value.substring(0, findFirstAlphabeticIndex(value)))!
-              .toInt();
+              value.substring(0, findFirstAlphabeticIndex(value)));
         }
         if (key.contains("margin")) {
           if (value.contains("%")) {
             double size =
                 double.tryParse(value.substring(0, value.length - 1)) ?? 10.5;
-            cssModel.margin = Margins.all(size, Unit.percent);
-          }
-          if (value.contains("rem")) {
+            cssModel.margin = Margins.all(size);
+          } else if (value.contains("rem")) {
             double size =
                 double.tryParse(value.substring(0, value.length - 3)) ?? 10.5;
-            cssModel.margin = Margins.all(size, Unit.rem);
+            cssModel.margin = Margins.all(size);
+          } else {
+            String unit = value.substring(value.length - 2);
+            // print(value.substring(0, value.indexOf(RegExp(r'[a-zA-Z]'))));
+            int doub = value.indexOf(RegExp(r'[a-zA-Z]'));
+            double size =
+                double.tryParse(value.substring(0, doub == -1 ? 0 : doub)) ??
+                    10.5;
+            cssModel.margin = Margins.all(size);
           }
-          String unit = value.substring(value.length - 2);
-          print(value.substring(0, value.indexOf(RegExp(r'[a-zA-Z]')) - 1));
-          double size = double.tryParse(
-                  value.substring(0, value.indexOf(RegExp(r'[a-zA-Z]')))) ??
-              10.5;
-          cssModel.margin = Margins.all(
-              size,
-              unit == "px"
-                  ? Unit.px
-                  : unit == "em"
-                      ? Unit.em
-                      : Unit.auto);
         }
         if (key == "marker") {
           cssModel.marker = Marker(content: Content.normal);
@@ -388,23 +375,17 @@ class CssModel {
           if (value.contains("%")) {
             double size =
                 double.tryParse(value.substring(0, value.length - 1)) ?? 10.5;
-            cssModel.padding = HtmlPaddings.all(size, Unit.percent);
+            cssModel.padding = HtmlPaddings.all(size);
           }
           if (value.contains("rem")) {
             double size =
                 double.tryParse(value.substring(0, value.length - 3)) ?? 10.5;
-            cssModel.padding = HtmlPaddings.all(size, Unit.rem);
+            cssModel.padding = HtmlPaddings.all(size);
           }
           String unit = value.substring(value.length - 2);
           double size =
               double.tryParse(value.substring(0, value.length - 2)) ?? 10.5;
-          cssModel.padding = HtmlPaddings.all(
-              size,
-              unit == "px"
-                  ? Unit.px
-                  : unit == "em"
-                      ? Unit.em
-                      : Unit.auto);
+          cssModel.padding = HtmlPaddings.all(size);
         }
         if (key == "text-align") {
           if (value == "center") {
@@ -507,13 +488,13 @@ class CssModel {
                 double size =
                     double.tryParse(value.substring(0, value.length - 1)) ??
                         10.5;
-                cssModel.width = Width(size, Unit.percent);
+                cssModel.width = Width(size);
               }
               if (value.contains("rem")) {
                 double size =
                     double.tryParse(value.substring(0, value.length - 3)) ??
                         10.5;
-                cssModel.width = Width(size, Unit.rem);
+                cssModel.width = Width(size);
               }
               String unit = value.substring(value.length - 2);
               double size =
@@ -529,12 +510,11 @@ class CssModel {
           }
         }
         if (key == "word-spacing") {
-          cssModel.wordSpacing = int.tryParse(value);
+          cssModel.wordSpacing = double.tryParse(value);
         }
       });
       resultMap.addAll({key1: cssModel});
     });
-    print(resultMap);
     return resultMap;
   }
 
@@ -587,8 +567,8 @@ class CssModel {
     final List<String> parts = cssBorder.split(' ');
     final BorderSide borderSide = BorderSide(
       color: parts.length >= 3 ? parseCssColor(parts[2]) : Colors.black,
-      width: parts.length >= 2 ? double.parse(parts[1]) : 1.0,
-      style: parts.length >= 1 ? parseBorderStyle(parts[0]) : BorderStyle.solid,
+      width: parts.length >= 2 ? double.tryParse(parts[1]) ?? 1.0 : 1.0,
+      style: parts.isNotEmpty ? parseBorderStyle(parts[0]) : BorderStyle.solid,
     );
 
     return Border.all(
@@ -611,5 +591,55 @@ class CssModel {
       default:
         return BorderStyle.none;
     }
+  }
+
+  Map<String, Style> mapToStyle(Map<String, CssModel> data) {
+    Map<String, Style> resultMap = {};
+    data.forEach((key, value) {
+      if (key != "") {
+        resultMap.addAll({
+          key: Style(
+              after: value.after,
+              alignment: value.alignmemt,
+              backgroundColor: value.backgroundColor,
+              before: value.before,
+              border: value.border,
+              color: value.color,
+              counterIncrement: value.counterIncrement,
+              counterReset: value.counterReset,
+              direction: value.direction,
+              display: value.display,
+              fontFamily: value.fontFamily,
+              fontFamilyFallback: value.fontFamilyFallback,
+              fontFeatureSettings: value.fontFeatureSettings,
+              fontSize: value.fontSize,
+              fontStyle: value.fontStyle,
+              fontWeight: value.fontWeight,
+              height: value.height,
+              letterSpacing: value.letterSpacing,
+              lineHeight: value.lineHeight,
+              listStyleImage: value.listStyleImage,
+              listStylePosition: value.listStylePosition,
+              listStyleType: value.listStyleType,
+              margin: value.margin,
+              marker: value.marker,
+              maxLines: value.maxLines,
+              padding: value.padding,
+              textAlign: value.textAlign,
+              textDecoration: value.textDecoration,
+              textDecorationColor: value.textDecorationColor,
+              textDecorationStyle: value.textDecorationStyle,
+              textDecorationThickness: value.textDecorationThickness,
+              textOverflow: value.textOverflow,
+              textShadow: value.textShadow,
+              textTransform: value.textTransform,
+              verticalAlign: value.verticalAlign ?? VerticalAlign.baseline,
+              whiteSpace: value.whiteSpace,
+              width: value.width,
+              wordSpacing: value.wordSpacing)
+        });
+      }
+    });
+    return resultMap;
   }
 }
