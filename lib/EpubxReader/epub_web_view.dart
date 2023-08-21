@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:epubx/src/ref_entities/epub_byte_content_file_ref.dart';
 import 'package:epubx/epubx.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 // import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
@@ -176,8 +177,10 @@ class _EpubWebViewState extends State<EpubWebView> {
                                               '''
                                                 <html>
                                                 <head></head>
-                                                <style>${widget.style}</style>
-                                                <body>
+                                                <style>${widget.style}
+                                                *{font-size: $dyanmicFont}
+                                                </style>
+                                                <body style="font-size: $dyanmicFont">
                                                 ${data[index]}
                                                 </body>
                                                 </html>
@@ -185,6 +188,16 @@ class _EpubWebViewState extends State<EpubWebView> {
                                               customWidgetBuilder: (element) {
                                                 EpubByteContentFileRef?
                                                     imageData;
+                                                if (element.localName == "p") {
+                                                  return Html(
+                                                    data: element.innerHtml,
+                                                    style: {
+                                                      "*": Style(
+                                                          fontSize: FontSize(
+                                                              dyanmicFont))
+                                                    },
+                                                  );
+                                                }
                                                 if (element.localName ==
                                                     "img") {
                                                   for (var i in element
@@ -296,6 +309,7 @@ class _EpubWebViewState extends State<EpubWebView> {
     final dom.Document document = parse(html);
     final dom.NodeList nodes = document.body!.nodes;
 
+    // String chunkPart = "";
     for (var node in nodes) {
       String nodeHtml = "";
       if (node is dom.Element) {
@@ -309,13 +323,15 @@ class _EpubWebViewState extends State<EpubWebView> {
           if (endIndex == -1) {
             endIndex = maxCharacters;
           }
-        }
-
+        } else {}
         String chunkPart = nodeHtml.substring(0, endIndex);
         currentChunk += chunkPart;
         nodeHtml = nodeHtml.substring(endIndex);
 
         if (currentChunk.trim().isNotEmpty) {
+          // if (currentChunk.length < maxCharacters) {
+          //   continue;
+          // }
           chunks.add(currentChunk);
           currentChunk = '';
         }
