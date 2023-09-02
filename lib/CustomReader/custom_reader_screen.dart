@@ -25,7 +25,7 @@ class _CustomReaderScreenState extends State<CustomReaderScreen> {
     CustomReaderController controller = Get.put(CustomReaderController());
     setState(() {
       book = controller.fetchBook(
-          "https://temp-file.org/download/WqPez4qEPGOYn/wfDQhQeEvmrgIuf/sanskrit_sample.epub");
+          "https://github.com/shoyabsiddique0/ott_platform/raw/main/yathartha_geeta_epub.epub");
     });
     return Scaffold(
       body: Center(

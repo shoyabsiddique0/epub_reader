@@ -172,6 +172,7 @@ class _EpubWebViewState extends State<EpubWebView> {
                                                 snapshot1.hasData
                                                     ? snapshot1.data!
                                                     : "");
+                                            // print(data);
                                             return HtmlWidget(
                                               '''
                                                 <html>
@@ -187,19 +188,20 @@ class _EpubWebViewState extends State<EpubWebView> {
                                                     imageData;
                                                 if (element.localName ==
                                                     "img") {
+                                                  print(element.innerHtml);
                                                   for (var i in element
                                                       .attributes.entries) {
-                                                    // print(i);
+                                                    print(i);
                                                     if (i.key == "src") {
                                                       // print(value[
                                                       //     value.length - 1]);
-                                                      imagesList!.entries
-                                                          .forEach((e) {
+                                                      for (var e in imagesList!
+                                                          .entries) {
                                                         if (e.key == i.value) {
                                                           print(e);
                                                           imageData = e.value;
                                                         }
-                                                      });
+                                                      }
                                                     }
                                                   }
                                                   return FutureBuilder(

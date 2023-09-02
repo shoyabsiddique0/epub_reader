@@ -114,6 +114,7 @@ class EpubState extends State<EpubWidget> {
                       'https://www.purebhakti.com/resources/ebooks-magazines/other/epubs/577-essence-of-bhagavad-gita-epub/file',
                       "https://cloudflare-ipfs.com/ipfs/bafykbzacecprokw3tm3tl6gduh3g3ph6542dywgkkqqsisv4rnckhbf7hqskw?filename=Ashwin%20Sanghi%20-%20Chanakya%E2%80%99s%20Chant%20%28Hindi%29-Westland%20%282014%29.epub",
                       "https://github.com/shoyabsiddique0/epub_reader/raw/main/hindi_sample.epub",
+                      "https://github.com/shoyabsiddique0/ott_platform/raw/main/yathartha_geeta_epub.epub",
                       'https://cloudflare-ipfs.com/ipfs/bafykbzacecoyxtsxcmjah5jzbyddu5eot63ogkskxhc4zp4amwoitvasqi6kc?filename=Leach%2C%20Frann%20-%20Natural%20Colors%20to%20Dye%20for_%20How%20to%20Use%20Natural%20Dyes%20From%20Plants%20and%20Fungi-Free-EasyPublications%20com%20%282013%29.epub'
                     ]
                         .map((link) => TextButton(
