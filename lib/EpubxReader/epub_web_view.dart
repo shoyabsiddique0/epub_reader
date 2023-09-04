@@ -33,6 +33,7 @@ class _EpubWebViewState extends State<EpubWebView> {
   @override
   Widget build(BuildContext context) {
     var css = widget.book.Content?.Css;
+    var cover = widget.book.readCover();
     return Scaffold(
       drawer: Drawer(
         child: FutureBuilder(

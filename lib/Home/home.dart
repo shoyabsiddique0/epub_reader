@@ -19,8 +19,10 @@ class Home extends StatelessWidget {
           children: [
             ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const EbookRead()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const EbookRead()));
                 },
                 child: const Text("Epub View Package")),
             ElevatedButton(
@@ -42,6 +44,11 @@ class Home extends StatelessWidget {
                   Get.to(const CustomReaderScreen());
                 },
                 child: const Text("Custom Reader")),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       Get.to(const EpubKittyView());
+            //     },
+            //     child: const Text("Kitty Reader")),
           ],
         ),
       ),
